@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login - Portal Dr. Marcio Scartozzoni</title>
+    <link rel="stylesheet" href="../assets/css/main.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+    <script src="../assets/js/env.js"></script>
+    <script src="../assets/js/portal-config.js"></script>
+    <script src="../assets/js/supabase-api.js"></script>
+    <script src="../assets/js/api.js"></script>
+    <style>
+      body {font-family:'Segoe UI',Tahoma,Verdana,sans-serif;background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);min-height:100vh;display:flex;align-items:center;justify-content:center;margin:0;padding:20px;}
+      .login-container {background:#fff;border-radius:20px;box-shadow:0 20px 40px rgba(0,0,0,.2);padding:40px;max-width:430px;width:100%;text-align:center;}
+      .login-header i {font-size:3.5em;color:#667eea;margin-bottom:10px;}
+      .login-header h1 {margin:0 0 5px;color:#2c3e50;font-size:1.9em;}
+      .login-header p {margin:0;color:#6c757d;font-size:.9em;}
+      .form-group {text-align:left;margin-bottom:18px;}
+      label {display:block;margin:0 0 6px;font-weight:600;color:#2c3e50;font-size:.9em;}
+      input {width:100%;padding:14px 14px;border:2px solid #e9ecef;border-radius:10px;font-size:15px;box-sizing:border-box;transition:.25s;border-top-right-radius:4px;}
+      input:focus {outline:none;border-color:#667eea;box-shadow:0 0 0 3px rgba(102,126,234,.15);}
+      .login-options {display:flex;justify-content:space-between;align-items:center;font-size:.75rem;margin:4px 0 14px;}
+      .remember-me {display:flex;align-items:center;gap:6px;}
+      .forgot-password {color:#667eea;text-decoration:none;font-weight:600;}
+      .forgot-password:hover {text-decoration:underline;}
+      .btn-login {width:100%;padding:14px;background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);color:#fff;border:none;border-radius:10px;font-size:15px;font-weight:600;cursor:pointer;transition:.25s;display:flex;align-items:center;justify-content:center;gap:8px;margin-top:4px;}
+      .btn-login:hover {transform:translateY(-2px);box-shadow:0 8px 25px rgba(102,126,234,.35);}
+      .btn-login:disabled {opacity:.55;cursor:not-allowed;transform:none;box-shadow:none;}
+      .error-message,.success-message {display:none;padding:12px;border-radius:10px;font-size:.85rem;margin-bottom:16px;text-align:left;line-height:1.4;}
+      .error-message {background:#fde2e4;color:#8a1c25;border:1px solid #f8c7cb;}
+      .success-message {background:#e3f7e9;color:#1c6b33;border:1px solid #bfe9cd;}
+      .loading {display:none;margin:10px 0 18px;font-size:.85rem;color:#555;}
+      .loading i {animation:spin 1s linear infinite;margin-bottom:6px;font-size:1.4em;display:block;}
+      footer small {display:block;margin-top:28px;color:#999;font-size:.65rem;letter-spacing:.5px;}
+      @keyframes spin {to {transform:rotate(360deg)}}
+      @media (max-width:480px){.login-container{padding:32px 24px;}}
+    </style>
+</head>
+<body>
+  <div class="login-container">
+    <div class="login-header">
+      <i class="fas fa-user-shield"></i>
+      <h1>Portal Médico</h1>
+      <p>Dr. Marcio Scartozzoni</p>
+    </div>
+
+    <div id="errorMessage" class="error-message"></div>
+    <div id="successMessage" class="success-message"></div>
+    <div id="loading" class="loading"><i class="fas fa-spinner"></i> Autenticando...</div>
+
+    <form id="loginForm" autocomplete="on">
+      <div class="form-group">
+        <label for="username">E-mail</label>
+        <input id="username" name="username" type="email" placeholder="seuemail@dominio.com" required />
+      </div>
+      <div class="form-group">
+        <label for="password">Senha</label>
+        <input id="password" name="password" type="password" placeholder="••••••••" required />
+      </div>
+      <div class="login-options">
+        <div class="remember-me">
+          <input type="checkbox" id="rememberMe" name="rememberMe" />
+          <label for="rememberMe" style="margin:0;font-weight:500;">Lembrar</label>
+        </div>
+        <a class="forgot-password" href="#" onclick="showForgotPassword()">Esqueci a senha</a>
+      </div>
+      <button type="submit" class="btn-login"><i class="fas fa-sign-in-alt"></i> Entrar</button>
+      <div style="margin-top:16px;font-size:.8rem;color:#555;">Não tem conta? <a href="cadastro.html" style="color:#667eea;font-weight:600;text-decoration:none;">Cadastre-se</a></div>
+    </form>
+    <footer><small>© 2025 Portal Médico. Todos os direitos reservados.</small></footer>
+  </div>
+
+  <script>
+  (function(){
+    const form = document.getElementById('loginForm');
+    const errorBox = document.getElementById('errorMessage');
+    const okBox = document.getElementById('successMessage');
+    const loading = document.getElementById('loading');
+    const btn = form.querySelector('button[type="submit"]');
+
+    const show = el=> el.style.display='block';
+    const hide = el=> el.style.display='none';
+    const msgError = t=>{ errorBox.textContent=t; show(errorBox); hide(okBox); };
+    const msgOk = t=>{ okBox.textContent=t; show(okBox); hide(errorBox); };
+    const setLoading = s=>{ loading.style.display = s?'block':'none'; btn.disabled=s; form.style.opacity=s?'.55':'1'; };
+
+    async function checkSession(){
+      try { const session = await window.SupabaseAPI.getSession(); if(session){ window.location.href='../home.html'; return; } } catch(e){}
+    }
+
+    form.addEventListener('submit', async e=>{
+      e.preventDefault(); hide(errorBox); hide(okBox); setLoading(true);
+      const email = document.getElementById('username').value.trim();
+      const password = document.getElementById('password').value;
+      if(!email || !password){ msgError('Informe e-mail e senha'); setLoading(false); return; }
+      try {
+        const result = await window.SupabaseAPI.signIn(email, password);
+        if(!result.success){ msgError(result.error || 'Credenciais inválidas'); setLoading(false); return; }
+        msgOk('Login realizado. Redirecionando...');
+        setTimeout(()=> window.location.href='../home.html', 500);
+      } catch(err){ console.error(err); msgError('Erro ao autenticar'); }
+      finally { setLoading(false); }
+    });
+
+    window.showForgotPassword = function(){
+      const email = prompt('Informe seu e-mail cadastrado:');
+      if(!email) return; setLoading(true);
+      window.SupabaseAPI.resetPassword(email)
+        .then(()=> msgOk('Se existir conta, e-mail enviado.'))
+        .catch(()=> msgError('Falha ao enviar e-mail.'))
+        .finally(()=> setLoading(false));
+    };
+
+    document.addEventListener('DOMContentLoaded', checkSession);
+  })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,83 @@
+{
+  "version": 2,
+  "name": "portal-dr-marcio",
+  "buildCommand": "",
+  "outputDirectory": ".",
+  "installCommand": "",
+  "framework": null,
+  "public": true,
+  "github": {
+    "enabled": true,
+    "autoAlias": true,
+    "silent": false
+  },
+  "redirects": [
+    {
+      "source": "/",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/login",
+      "destination": "/auth/login.html"
+    },
+    {
+      "source": "/cadastro",
+      "destination": "/auth/cadastro.html"
+    },
+    {
+      "source": "/recuperar-senha",
+      "destination": "/auth/redefinir-senha.html"
+    },
+    {
+      "source": "/dashboard",
+      "destination": "/dashboard.html"
+    },
+    {
+      "source": "/admin",
+      "destination": "/admin/dashboard-admin.html"
+    },
+    {
+      "source": "/agendamentos",
+      "destination": "/modules/agendamentos.html"
+    },
+    {
+      "source": "/pacientes",
+      "destination": "/modules/pacientes.html"
+    },
+    {
+      "source": "/prontuarios",
+      "destination": "/modules/prontuarios.html"
+    },
+    {
+      "source": "/caderno-digital",
+      "destination": "/modules/caderno-digital.html"
+    }
+  ],
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "Content-Security-Policy",
+          "value": "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net; object-src 'none'; base-uri 'self';"
+        },
+        {
+          "key": "X-Frame-Options",
+          "value": "SAMEORIGIN"
+        },
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "Referrer-Policy",
+          "value": "origin-when-cross-origin"
+        }
+      ]
+    }
+  ],
+  "env": {
+    "SUPABASE_URL": "https://obohdaxvawmjhxsjgikp.supabase.co",
+    "SUPABASE_ANON_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9ib2hkYXh2YXdtamh4c2pnaWtwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQ1NDQzMTYsImV4cCI6MjA3MDEyMDMxNn0.Oa4GC17FfUqajBRuEDLroXIg1vBd_x6shE6ke8pKMKU"
+  }
+}

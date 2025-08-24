@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Auditoria - Clínica Dr. Marcio</title>
+    <script src="assets/js/security-system.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .audit-entry { border: 1px solid #ddd; margin: 10px 0; padding: 15px; border-radius: 5px; }
+        .critical { border-color: #dc3545; background: #ffeaea; }
+        .timestamp { font-weight: bold; color: #666; }
+        .action { font-weight: bold; color: #007bff; }
+        .details { margin-top: 10px; font-size: 0.9em; color: #666; }
+    </style>
+</head>
+<body>
+    <h1>🔍 Sistema de Auditoria</h1>
+    <button onclick="loadAuditLogs()">Carregar Logs</button>
+    <button onclick="exportLogs()">Exportar Logs</button>
+    <div id="auditLogs"></div>
+    
+    <script>
+        function loadAuditLogs() {
+            const logs = JSON.parse(localStorage.getItem('audit_logs') || '[]');
+            const container = document.getElementById('auditLogs');
+            
+            container.innerHTML = logs.map(log => `
+                <div class="audit-entry ${log.action.includes('CRITICAL') || log.action.includes('FAILED') ? 'critical' : ''}">
+                    <div class="timestamp">${new Date(log.timestamp).toLocaleString('pt-BR')}</div>
+                    <div class="action">${log.action}</div>
+                    <div>Usuário: ${log.user.nome} (${log.user.tipo})</div>
+                    <div class="details">${JSON.stringify(log.details, null, 2)}</div>
+                </div>
+            `).join('');
+        }
+        
+        function exportLogs() {
+            const logs = JSON.parse(localStorage.getItem('audit_logs') || '[]');
+            const blob = new Blob([JSON.stringify(logs, null, 2)], {type: 'application/json'});
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `auditoria-${new Date().toISOString().split('T')[0]}.json`;
+            a.click();
+        }
+    </script>
+</body>
+</html>

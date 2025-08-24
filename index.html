@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Portal Médico Dr. Marcio Scartozzoni - Cirurgião Plástico. Sistema completo de gestão médica.">
+    <title>Portal Dr. Marcio - Sistema Médico Completo</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏥</text></svg>">
+    <link rel="stylesheet" href="assets/css/style.css">
+    
+    <!-- Variáveis de ambiente -->
+    <script src="assets/js/env.js"></script>
+    <!-- Supabase API Cliente -->
+    <script src="assets/js/supabase-api.js"></script>
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#3498db">
+    
+    <!-- Meta tags para PWA -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Portal Dr. Marcio">
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div id="loading-screen" style="
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(135deg, #3498db, #2c3e50);
+        color: white;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        z-index: 9999;
+        font-family: 'Segoe UI', sans-serif;
+    ">
+        <div style="font-size: 4rem; margin-bottom: 1rem;">🏥</div>
+        <h2>Portal Dr. Marcio</h2>
+        <div style="margin-top: 2rem;">
+            <div style="width: 50px; height: 50px; border: 3px solid rgba(255,255,255,0.3); border-top: 3px solid white; border-radius: 50%; animation: spin 1s linear infinite;"></div>
+        </div>
+    </div>
+
+    <header>
+        <h1>Portal Médico Dr. Marcio Scartozzoni</h1>
+        <p>Cirurgião Plástico - Sistema Completo de Gestão</p>
+        <nav>
+            <ul>
+                <li><a href="index.html">🏠 Início</a></li>
+                <li><a href="login.html">🔐 Login</a></li>
+                <li><a href="portal-deploy-final-correto/dashboard.html">📊 Dashboard</a></li>
+                <li><a href="modules/agendamentos.html">📅 Agendamentos</a></li>
+                <li><a href="modules/pacientes.html">👥 Pacientes</a></li>
+                <li><a href="portal-deploy-final-correto/cadastro.html">➕ Cadastro</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section id="welcome">
+            <h2>Bem-vindo ao Portal Médico Completo</h2>
+            <p>Sistema integrado para gestão completa do consultório Dr. Marcio Scartozzoni. Gerencie agendamentos, prontuários, pacientes e muito mais em uma plataforma única e profissional.</p>
+            
+            <div class="features">
+                <div class="feature-card">
+                    <h3>� Dashboard Completo</h3>
+                    <p>Visão geral completa com estatísticas e indicadores</p>
+                    <a href="portal-deploy-final-correto/dashboard.html">Acessar Dashboard</a>
+                </div>
+                
+                <div class="feature-card">
+                    <h3>📅 Agendamentos</h3>
+                    <p>Sistema completo de agendamento e gestão de consultas</p>
+                    <a href="portal-deploy-final-correto/agendar.html">Agendar Consulta</a>
+                </div>
+                
+                <div class="feature-card">
+                    <h3>👥 Gestão de Pacientes</h3>
+                    <p>Cadastro completo e histórico detalhado de pacientes</p>
+                    <a href="portal-deploy-final-correto/cadastro.html">Cadastrar Paciente</a>
+                </div>
+                
+                <div class="feature-card">
+                    <h3>📋 Prontuários Digitais</h3>
+                    <p>Sistema completo de prontuários eletrônicos</p>
+                    <a href="portal-deploy-final-correto/prontuarios.html">Ver Prontuários</a>
+                </div>
+                
+                <div class="feature-card">
+                    <h3>📈 Quadro Evolutivo</h3>
+                    <p>Acompanhamento da evolução dos pacientes</p>
+                    <a href="portal-deploy-final-correto/quadro-evolutivo.html">Ver Evolução</a>
+                </div>
+                
+                <div class="feature-card">
+                    <h3>💰 Gestão Financeira</h3>
+                    <p>Controle completo de orçamentos e pagamentos</p>
+                    <a href="portal-deploy-final-correto/gestao-financeira.html">Gestão Financeira</a>
+                </div>
+                
+                <div class="feature-card">
+                    <h3>🔒 Administração</h3>
+                    <p>Painel administrativo e configurações do sistema</p>
+                    <a href="portal-deploy-final-correto/admin.html">Painel Admin</a>
+                </div>
+                
+                <div class="feature-card">
+                    <h3>� Jornada do Paciente</h3>
+                    <p>Acompanhamento completo da jornada do paciente</p>
+                    <a href="portal-deploy-final-correto/jornada-paciente.html">Ver Jornada</a>
+                </div>
+            </div>
+        </section>
+
+        <section id="stats" style="margin-top: 3rem;">
+            <div style="text-align: center; margin-bottom: 2rem;">
+                <h3>Sistema em Funcionamento</h3>
+                <p>Portal médico profissional totalmente funcional</p>
+            </div>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem;">
+                <div style="background: white; padding: 1.5rem; border-radius: 10px; text-align: center; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+                    <div style="font-size: 2rem; color: #3498db;">🏥</div>
+                    <h4>Sistema Completo</h4>
+                    <p>Portal médico profissional</p>
+                </div>
+                <div style="background: white; padding: 1.5rem; border-radius: 10px; text-align: center; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+                    <div style="font-size: 2rem; color: #27ae60;">✅</div>
+                    <h4>Totalmente Funcional</h4>
+                    <p>Pronto para produção</p>
+                </div>
+                <div style="background: white; padding: 1.5rem; border-radius: 10px; text-align: center; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+                    <div style="font-size: 2rem; color: #e74c3c;">🔒</div>
+                    <h4>Seguro</h4>
+                    <p>Sistema com autenticação</p>
+                </div>
+                <div style="background: white; padding: 1.5rem; border-radius: 10px; text-align: center; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+                    <div style="font-size: 2rem; color: #f39c12;">📱</div>
+                    <h4>Responsivo</h4>
+                    <p>Funciona em todos dispositivos</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 Dr. Marcio Scartozzoni - Cirurgião Plástico. Todos os direitos reservados.</p>
+        <p>Sistema médico profissional desenvolvido especialmente para o consultório.</p>
+    </footer>
+    
+    <!-- Scripts com funcionalidades avançadas -->
+    <script>
+        // CSS para animação de loading
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes spin {
+                0% { transform: rotate(0deg); }
+                100% { transform: rotate(360deg); }
+            }
+        `;
+        document.head.appendChild(style);
+
+        // Remover loading screen após carregamento
+        window.addEventListener('load', function() {
+            setTimeout(function() {
+                const loadingScreen = document.getElementById('loading-screen');
+                if (loadingScreen) {
+                    loadingScreen.style.transition = 'opacity 0.5s ease';
+                    loadingScreen.style.opacity = '0';
+                    setTimeout(() => {
+                        loadingScreen.style.display = 'none';
+                    }, 500);
+                }
+            }, 1500);
+        });
+
+        // Efeitos interativos nos cards
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🏥 Portal Dr. Marcio - Sistema Carregado!');
+            
+            const cards = document.querySelectorAll('.feature-card');
+            
+            cards.forEach(card => {
+                card.addEventListener('mouseenter', function() {
+                    this.style.transform = 'translateY(-8px) scale(1.02)';
+                    this.style.boxShadow = '0 8px 25px rgba(0,0,0,0.2)';
+                });
+                
+                card.addEventListener('mouseleave', function() {
+                    this.style.transform = 'translateY(0) scale(1)';
+                    this.style.boxShadow = '0 2px 10px rgba(0,0,0,0.1)';
+                });
+            });
+
+            // Analytics simples
+            console.log('📊 Portal Analytics: Página inicial carregada');
+        });
+
+        // PWA - Service Worker
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function() {
+                navigator.serviceWorker.register('/sw.js').then(function(registration) {
+                    console.log('✅ Service Worker registrado');
+                }).catch(function(error) {
+                    console.log('❌ Falha ao registrar Service Worker:', error);
+                });
+            });
+        }
+    </script>
+</body>
+</html>

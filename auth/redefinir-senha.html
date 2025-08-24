@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Redefinir Senha - Portal Dr. Marcio Scartozzoni</title>
+    <link rel="stylesheet" href="../assets/css/main.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Variáveis de ambiente -->
+    <script src="../assets/js/env.js"></script>
+    <!-- Supabase API Cliente -->
+    <script src="../assets/js/supabase-api.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .reset-container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+            padding: 40px;
+            width: 100%;
+            max-width: 450px;
+            text-align: center;
+        }
+
+        .reset-header {
+            margin-bottom: 30px;
+        }
+
+        .reset-header i {
+            font-size: 4em;
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+
+        .reset-header h1 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+            font-size: 2em;
+        }
+
+        .reset-header p {
+            color: #6c757d;
+            margin-bottom: 0;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+            text-align: left;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #2c3e50;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+            outline: none;
+        }
+
+        .form-group input:focus {
+            border-color: #667eea;
+        }
+
+        .error-message {
+            background-color: #fee;
+            color: #e74c3c;
+            padding: 12px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .success-message {
+            background-color: #e8f5e9;
+            color: #2ecc71;
+            padding: 12px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .btn-reset {
+            background: linear-gradient(to right, #667eea, #764ba2);
+            border: none;
+            padding: 12px 20px;
+            color: white;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            width: 100%;
+            transition: transform 0.3s, box-shadow 0.3s;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.2);
+            margin-top: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn-reset:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-reset:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .loading i {
+            font-size: 2em;
+            color: #667eea;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .form-footer {
+            margin-top: 20px;
+            text-align: center;
+            font-size: 14px;
+        }
+
+        .form-footer a {
+            color: #667eea;
+            text-decoration: none;
+        }
+
+        .form-footer a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="reset-container">
+        <div class="reset-header">
+            <i class="fas fa-key"></i>
+            <h1>Redefinir Senha</h1>
+            <p>Crie uma nova senha segura</p>
+        </div>
+
+        <div class="error-message" id="errorMessage"></div>
+        <div class="success-message" id="successMessage"></div>
+        <div class="loading" id="loading">
+            <i class="fas fa-spinner"></i>
+            <p>Processando...</p>
+        </div>
+
+        <form class="reset-form" id="resetForm">
+            <div class="form-group">
+                <label for="password">Nova Senha</label>
+                <input type="password" id="password" name="password" required 
+                       placeholder="Digite sua nova senha">
+            </div>
+
+            <div class="form-group">
+                <label for="confirmPassword">Confirmar Senha</label>
+                <input type="password" id="confirmPassword" name="confirmPassword" required 
+                       placeholder="Confirme sua nova senha">
+            </div>
+
+            <button type="submit" class="btn-reset">
+                <i class="fas fa-check-circle"></i>
+                Redefinir Senha
+            </button>
+
+            <div class="form-footer">
+                <a href="login.html">Voltar para o login</a>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', async function() {
+            // Verificar se temos um hash de recuperação de senha na URL
+            const hash = window.location.hash;
+            
+            if (!hash) {
+                showError('Link de redefinição de senha inválido ou expirado');
+                document.getElementById('resetForm').style.display = 'none';
+                return;
+            }
+            
+            // Configurar formulário de redefinição
+            const resetForm = document.getElementById('resetForm');
+            
+            resetForm.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                hideMessages();
+                
+                // Validar senha
+                const password = document.getElementById('password').value;
+                const confirmPassword = document.getElementById('confirmPassword').value;
+                
+                if (password.length < 8) {
+                    showError('Sua senha deve ter pelo menos 8 caracteres');
+                    return;
+                }
+                
+                if (password !== confirmPassword) {
+                    showError('As senhas não correspondem');
+                    return;
+                }
+                
+                // Mostrar loading
+                showLoading(true);
+                
+                try {
+                    // Atualizar senha no Supabase
+                    const success = await window.SupabaseAPI.updatePassword(password);
+                    
+                    showLoading(false);
+                    
+                    if (success) {
+                        showSuccess('Senha redefinida com sucesso! Redirecionando para o login...');
+                        
+                        // Redirecionar para login após alguns segundos
+                        setTimeout(() => {
+                            window.location.href = 'login.html';
+                        }, 3000);
+                    } else {
+                        showError('Não foi possível redefinir sua senha. Tente novamente.');
+                    }
+                } catch (error) {
+                    console.error('Erro ao redefinir senha:', error);
+                    showLoading(false);
+                    showError('Erro ao processar solicitação. O link pode ter expirado.');
+                }
+            });
+        });
+        
+        // Utilitários de UI
+        function showError(message) {
+            const errorDiv = document.getElementById('errorMessage');
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+        }
+
+        function showSuccess(message) {
+            const successDiv = document.getElementById('successMessage');
+            successDiv.textContent = message;
+            successDiv.style.display = 'block';
+        }
+
+        function hideMessages() {
+            document.getElementById('errorMessage').style.display = 'none';
+            document.getElementById('successMessage').style.display = 'none';
+        }
+
+        function showLoading(show) {
+            const loading = document.getElementById('loading');
+            const form = document.getElementById('resetForm');
+            const button = form.querySelector('button[type="submit"]');
+
+            if (show) {
+                loading.style.display = 'block';
+                form.style.opacity = '0.5';
+                button.disabled = true;
+            } else {
+                loading.style.display = 'none';
+                form.style.opacity = '1';
+                button.disabled = false;
+            }
+        }
+    </script>
+</body>
+</html>

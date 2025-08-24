@@ -1,0 +1,1177 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Caderno Digital - Dr. Marcio Scartozzoni</title>
+    <link rel="stylesheet" href="../assets/css/main.css">
+    <link rel="stylesheet" href="../assets/css/card-unificado.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 20px;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+        }
+
+        .header-left h1 {
+            font-size: 2.2em;
+            margin-bottom: 5px;
+        }
+
+        .header-left p {
+            opacity: 0.9;
+        }
+
+        .paciente-selector {
+            background: rgba(255,255,255,0.1);
+            padding: 15px 20px;
+            border-radius: 15px;
+            min-width: 300px;
+        }
+
+        .paciente-selector select {
+            background: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 8px;
+            width: 100%;
+            font-size: 14px;
+            color: #2c3e50;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 350px 1fr;
+            gap: 30px;
+            min-height: 600px;
+        }
+
+        .sidebar {
+            background: rgba(255,255,255,0.95);
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            height: fit-content;
+        }
+
+        .sidebar h3 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 1.2em;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .acoes-rapidas {
+            margin-bottom: 30px;
+        }
+
+        .btn-acao {
+            width: 100%;
+            padding: 12px 15px;
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .btn-acao:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+        }
+
+        .document-list {
+            list-style: none;
+        }
+
+        .document-item {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .document-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+            border-color: #667eea;
+        }
+
+        .document-item.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .document-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .document-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 18px;
+        }
+
+        .document-icon.orcamento { background: #3498db; }
+        .document-icon.receita { background: #9b59b6; }
+        .document-icon.exames { background: #1abc9c; }
+        .document-icon.ficha { background: #e74c3c; }
+        .document-icon.evolucao { background: #f39c12; }
+
+        .document-info h4 {
+            margin: 0;
+            font-size: 14px;
+        }
+
+        .document-info p {
+            margin: 0;
+            font-size: 12px;
+            opacity: 0.8;
+        }
+
+        .canvas-area {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            position: relative;
+            overflow: auto;
+        }
+
+        .canvas-placeholder {
+            text-align: center;
+            padding: 100px 20px;
+            color: #7f8c8d;
+        }
+
+        .canvas-placeholder i {
+            font-size: 4em;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+
+        .document-form {
+            display: none;
+        }
+
+        .document-form.active {
+            display: block;
+        }
+
+        .form-section {
+            background: #f8f9fa;
+            padding: 25px;
+            margin-bottom: 20px;
+            border-radius: 15px;
+            border-left: 4px solid #667eea;
+        }
+
+        .form-section h3 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #2c3e50;
+            font-weight: 600;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #dee2e6;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 2px solid #e9ecef;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+            flex: 1;
+            min-width: 150px;
+            justify-content: center;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+        }
+
+        .btn-success:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(40, 167, 69, 0.3);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 20px;
+            padding: 0;
+            width: 90%;
+            max-width: 800px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.3);
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px 30px;
+            border-radius: 20px 20px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h2 {
+            margin: 0;
+            font-size: 1.5em;
+        }
+
+        .btn-close {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: white;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            font-size: 18px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-close:hover {
+            background: rgba(255,255,255,0.3);
+            transform: scale(1.1);
+        }
+
+        .modal-body {
+            padding: 30px;
+        }
+
+        .modal-footer {
+            padding: 20px 30px;
+            border-top: 1px solid #e9ecef;
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+            background: #f8f9fa;
+            border-radius: 0 0 20px 20px;
+        }
+
+        .preset-texts {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .preset-btn {
+            background: #f8f9fa;
+            border: 2px solid #dee2e6;
+            padding: 12px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: left;
+        }
+
+        .preset-btn:hover {
+            background: #e9ecef;
+            border-color: #667eea;
+        }
+
+        .toolbar {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            flex-wrap: wrap;
+        }
+
+        .toolbar button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .toolbar button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .header {
+                flex-direction: column;
+                gap: 20px;
+            }
+            
+            .form-actions {
+                flex-direction: column;
+            }
+        }
+
+        /* Estilos específicos para Quadro de Evolução */
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 20px;
+        }
+
+        .card-evolucao {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            border-left: 5px solid;
+            transition: all 0.3s ease;
+        }
+
+        .card-evolucao:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+
+        .card-evolucao.success {
+            border-left-color: #28a745;
+        }
+
+        .card-evolucao.warning {
+            border-left-color: #ffc107;
+        }
+
+        .card-evolucao.danger {
+            border-left-color: #dc3545;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 15px;
+        }
+
+        .card-title h4 {
+            margin: 0;
+            color: #2c3e50;
+            font-size: 16px;
+        }
+
+        .card-status {
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .card-status.success {
+            background: #28a745;
+            color: white;
+        }
+
+        .card-status.warning {
+            background: #ffc107;
+            color: #212529;
+        }
+
+        .card-status.danger {
+            background: #dc3545;
+            color: white;
+        }
+
+        .evolucao-sidebar {
+            background: #f8f9fa;
+            padding: 20px;
+            border-right: 2px solid #e9ecef;
+            overflow-y: auto;
+        }
+
+        .evolucao-main {
+            padding: 20px;
+            overflow-y: auto;
+        }
+    </style>
+    <script src="../assets/js/auth-guard.js"></script>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="header-left">
+                <h1><i class="fas fa-book-medical"></i> Caderno Digital</h1>
+                <p>Sistema integrado de documentação médica</p>
+            </div>
+            <div class="paciente-selector">
+                <label style="color: white; font-weight: 600; margin-bottom: 8px; display: block;">
+                    <i class="fas fa-user"></i> Selecionar Paciente
+                </label>
+                <select id="pacienteSelect" onchange="selecionarPaciente()">
+                    <option value="">Escolha um paciente...</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="toolbar">
+            <button onclick="voltarPortal()">
+                <i class="fas fa-arrow-left"></i> Voltar ao Portal
+            </button>
+            <button onclick="novoDocumento()">
+                <i class="fas fa-plus"></i> Novo Documento
+            </button>
+            <button onclick="capturarFoto()">
+                <i class="fas fa-camera"></i> Tirar Foto
+            </button>
+            <button onclick="sincronizar()">
+                <i class="fas fa-sync"></i> Sincronizar
+            </button>
+            <input type="date" id="dataFiltro" onchange="filtrarPorData()" style="
+                padding: 10px 15px;
+                border: 2px solid #667eea;
+                border-radius: 8px;
+                margin-left: auto;
+            ">
+        </div>
+
+        <div class="main-content">
+            <div class="sidebar">
+                <h3><i class="fas fa-bolt"></i> Ações Rápidas</h3>
+                <div class="acoes-rapidas">
+                    <button onclick="abrirFichaAtendimento()" class="btn-acao" style="background: linear-gradient(135deg, #8e44ad 0%, #9b59b6 100%);">
+                        <i class="fas fa-clipboard-list"></i> Ficha de Atendimento
+                    </button>
+                    
+                    <button onclick="abrirEvolucao()" class="btn-acao" style="background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);">
+                        <i class="fas fa-chart-line"></i> Evolução Paciente
+                    </button>
+                    
+                    <button onclick="gerarReceita()" class="btn-acao" style="background: linear-gradient(135deg, #28a745 0%, #20c997 100%);">
+                        <i class="fas fa-prescription-bottle-alt"></i> Gerar Receita
+                    </button>
+                    
+                    <button onclick="gerarExames()" class="btn-acao" style="background: linear-gradient(135deg, #17a2b8 0%, #20c997 100%);">
+                        <i class="fas fa-vial"></i> Gerar Exames
+                    </button>
+                </div>
+
+                <h3><i class="fas fa-file-alt"></i> Documentos</h3>
+                <ul class="document-list">
+                    <li class="document-item active" onclick="abrirDocumento('orcamento')">
+                        <div class="document-header">
+                            <div class="document-icon orcamento">
+                                <i class="fas fa-dollar-sign"></i>
+                            </div>
+                            <div class="document-info">
+                                <h4>Orçamento Cirúrgico</h4>
+                                <p>Valores e formas de pagamento</p>
+                            </div>
+                        </div>
+                    </li>
+                    
+                    <li class="document-item" onclick="abrirDocumento('receita')">
+                        <div class="document-header">
+                            <div class="document-icon receita">
+                                <i class="fas fa-prescription"></i>
+                            </div>
+                            <div class="document-info">
+                                <h4>Receitas Médicas</h4>
+                                <p>Prescrições e medicamentos</p>
+                            </div>
+                        </div>
+                    </li>
+                    
+                    <li class="document-item" onclick="abrirDocumento('exames')">
+                        <div class="document-header">
+                            <div class="document-icon exames">
+                                <i class="fas fa-microscope"></i>
+                            </div>
+                            <div class="document-info">
+                                <h4>Pedido de Exames</h4>
+                                <p>Solicitações laboratoriais</p>
+                            </div>
+                        </div>
+                    </li>
+                    
+                    <li class="document-item" onclick="abrirDocumento('ficha')">
+                        <div class="document-header">
+                            <div class="document-icon ficha">
+                                <i class="fas fa-user-md"></i>
+                            </div>
+                            <div class="document-info">
+                                <h4>Ficha de Atendimento</h4>
+                                <p>Consulta e anamnese</p>
+                            </div>
+                        </div>
+                    </li>
+                    
+                    <li class="document-item" onclick="abrirDocumento('evolucao')">
+                        <div class="document-header">
+                            <div class="document-icon evolucao">
+                                <i class="fas fa-chart-bar"></i>
+                            </div>
+                            <div class="document-info">
+                                <h4>Quadro Evolutivo</h4>
+                                <p>Acompanhamento clínico</p>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="canvas-area">
+                <!-- Placeholder inicial -->
+                <div class="canvas-placeholder" id="placeholder">
+                    <i class="fas fa-file-medical"></i>
+                    <h3>Selecione um documento para começar</h3>
+                    <p>Escolha um tipo de documento no menu lateral para iniciar a documentação médica</p>
+                </div>
+
+                <!-- Formulário de Orçamento -->
+                <div class="document-form" id="orcamento-form">
+                    <div class="form-section">
+                        <h3><i class="fas fa-dollar-sign"></i> Orçamento Cirúrgico</h3>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label>Nome Completo</label>
+                                <input type="text" id="orcamento-nome" placeholder="Nome do paciente">
+                            </div>
+                            <div class="form-group">
+                                <label>Cirurgia</label>
+                                <input type="text" id="orcamento-cirurgia" placeholder="Tipo de cirurgia">
+                            </div>
+                            <div class="form-group">
+                                <label>Valor Clínica (R$)</label>
+                                <input type="number" id="orcamento-valor-clinica" placeholder="0,00">
+                            </div>
+                            <div class="form-group">
+                                <label>Valor Hospital (R$)</label>
+                                <input type="number" id="orcamento-valor-hospital" placeholder="0,00">
+                            </div>
+                        </div>
+                        
+                        <h4>Forma de Pagamento</h4>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label>
+                                    <input type="radio" name="pagamento" value="vista"> 
+                                    Pagamento à vista (3% desconto)
+                                </label>
+                            </div>
+                            <div class="form-group">
+                                <label>
+                                    <input type="radio" name="pagamento" value="3x"> 
+                                    Em até 3x (5% acréscimo)
+                                </label>
+                            </div>
+                            <div class="form-group">
+                                <label>
+                                    <input type="radio" name="pagamento" value="10x"> 
+                                    Em até 10x (10% acréscimo)
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Hospital</label>
+                            <input type="text" id="orcamento-hospital" placeholder="Hospital onde será realizada">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Observações</label>
+                            <textarea id="orcamento-obs" rows="4" placeholder="Informações adicionais"></textarea>
+                        </div>
+
+                        <div class="form-actions">
+                            <button type="button" onclick="gerarOrcamento()" class="btn btn-primary">
+                                <i class="fas fa-file-pdf"></i> Gerar Orçamento
+                            </button>
+                            <button type="button" onclick="enviarParaGestao()" class="btn btn-success">
+                                <i class="fas fa-paper-plane"></i> Enviar para Gestão
+                            </button>
+                            <button type="button" onclick="salvarRascunho()" class="btn btn-secondary">
+                                <i class="fas fa-save"></i> Salvar Rascunho
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Outras seções serão adicionadas aqui -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Receita -->
+    <div class="modal-overlay" id="modal-receita">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-prescription"></i> Receita Médica</h2>
+                <button class="btn-close" onclick="fecharModal('modal-receita')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Paciente</label>
+                    <input type="text" id="receita-paciente" placeholder="Nome do paciente">
+                </div>
+                <div class="form-group">
+                    <label>Prescrição</label>
+                    <textarea id="receita-prescricao" rows="8" placeholder="Digite a prescrição médica..."></textarea>
+                </div>
+                <div class="preset-texts">
+                    <button class="preset-btn" onclick="inserirTextoReceita('antibiotico')">
+                        Antibiótico padrão (Amoxicilina)
+                    </button>
+                    <button class="preset-btn" onclick="inserirTextoReceita('analgesico')">
+                        Analgésico/Anti-inflamatório
+                    </button>
+                    <button class="preset-btn" onclick="inserirTextoReceita('pos-operatorio')">
+                        Medicação pós-operatória
+                    </button>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button onclick="gerarPDFReceita()" class="btn btn-primary">
+                    <i class="fas fa-file-pdf"></i> Gerar PDF
+                </button>
+                <button onclick="fecharModal('modal-receita')" class="btn btn-secondary">
+                    <i class="fas fa-times"></i> Fechar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Exames -->
+    <div class="modal-overlay" id="modal-exames">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-vial"></i> Pedido de Exames</h2>
+                <button class="btn-close" onclick="fecharModal('modal-exames')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Paciente</label>
+                    <input type="text" id="exames-paciente" placeholder="Nome do paciente">
+                </div>
+                <div class="form-group">
+                    <label>Exames Solicitados</label>
+                    <textarea id="exames-lista" rows="6" placeholder="Liste os exames solicitados..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Justificativa Clínica</label>
+                    <textarea id="exames-justificativa" rows="4" placeholder="Justificativa médica..."></textarea>
+                </div>
+                <div class="preset-texts">
+                    <button class="preset-btn" onclick="inserirTextoExames('pre-operatorio')">
+                        Exames pré-operatórios
+                    </button>
+                    <button class="preset-btn" onclick="inserirTextoExames('rotina')">
+                        Exames de rotina
+                    </button>
+                    <button class="preset-btn" onclick="inserirTextoExames('cardiologicos')">
+                        Avaliação cardiológica
+                    </button>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button onclick="gerarPDFExames()" class="btn btn-primary">
+                    <i class="fas fa-file-pdf"></i> Gerar PDF
+                </button>
+                <button onclick="fecharModal('modal-exames')" class="btn btn-secondary">
+                    <i class="fas fa-times"></i> Fechar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="../assets/js/caderno-digital.js"></script>
+    <script>
+        let pacienteAtual = null;
+
+        // Inicialização
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('📝 Caderno Digital - Inicializando...');
+            carregarPacientes();
+            abrirDocumento('orcamento'); // Abre o orçamento por padrão
+        });
+
+        function carregarPacientes() {
+            const select = document.getElementById('pacienteSelect');
+            
+            // Simular carregamento de pacientes
+            const pacientes = [
+                { id: 1, nome: 'João Silva', cpf: '123.456.789-00' },
+                { id: 2, nome: 'Maria Santos', cpf: '987.654.321-00' },
+                { id: 3, nome: 'Pedro Oliveira', cpf: '456.789.123-00' },
+                { id: 4, nome: 'Ana Costa', cpf: '789.123.456-00' }
+            ];
+
+            pacientes.forEach(paciente => {
+                const option = document.createElement('option');
+                option.value = paciente.id;
+                option.textContent = `${paciente.nome} - ${paciente.cpf}`;
+                select.appendChild(option);
+            });
+        }
+
+        function selecionarPaciente() {
+            const select = document.getElementById('pacienteSelect');
+            const pacienteId = select.value;
+            
+            if (pacienteId) {
+                // Simular carregamento dos dados do paciente
+                pacienteAtual = {
+                    id: pacienteId,
+                    nome: select.options[select.selectedIndex].text.split(' - ')[0],
+                    cpf: select.options[select.selectedIndex].text.split(' - ')[1]
+                };
+                
+                
+                preencherDadosPaciente();
+            }
+        }
+
+        function preencherDadosPaciente() {
+            if (pacienteAtual) {
+                // Preencher campos do orçamento
+                if (document.getElementById('orcamento-nome')) {
+                    document.getElementById('orcamento-nome').value = pacienteAtual.nome;
+                }
+                
+                // Preencher outros formulários conforme necessário
+                console.log('📋 Dados do paciente preenchidos nos formulários');
+            }
+        }
+
+        function abrirDocumento(tipo) {
+            // Esconder todos os formulários
+            document.querySelectorAll('.document-form').forEach(form => {
+                form.style.display = 'none';
+                form.classList.remove('active');
+            });
+            
+            // Esconder placeholder
+            document.getElementById('placeholder').style.display = 'none';
+            
+            // Remover classe active de todos os itens
+            document.querySelectorAll('.document-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            // Mostrar formulário específico
+            const form = document.getElementById(tipo + '-form');
+            if (form) {
+                form.style.display = 'block';
+                form.classList.add('active');
+            } else {
+                document.getElementById('placeholder').style.display = 'block';
+            }
+            
+            // Marcar item ativo
+            const item = document.querySelector(`[onclick="abrirDocumento('${tipo}')"]`);
+            if (item) {
+                item.classList.add('active');
+            }
+            
+            console.log(`📄 Documento aberto: ${tipo}`);
+        }
+
+        function voltarPortal() {
+            window.location.href = '../index.html';
+        }
+
+        function novoDocumento() {
+            const tipos = [
+                'Orçamento Cirúrgico',
+                'Receita Médica',
+                'Pedido de Exames',
+                'Ficha de Atendimento',
+                'Quadro Evolutivo'
+            ];
+            
+            const escolha = prompt('Escolha o tipo de documento:\n\n' + 
+                tipos.map((tipo, index) => `${index + 1} - ${tipo}`).join('\n'));
+            
+            if (escolha && escolha >= 1 && escolha <= tipos.length) {
+                const mapeamento = ['orcamento', 'receita', 'exames', 'ficha', 'evolucao'];
+                abrirDocumento(mapeamento[escolha - 1]);
+            }
+        }
+
+        function capturarFoto() {
+            SecureNotification.show('📸 Funcionalidade de captura de foto em desenvolvimento!\n\nEm breve você poderá:\n• Usar a câmera do dispositivo\n• Anotar nas fotos\n• Organizar por data');
+        }
+
+        function sincronizar() {
+            console.log('🔄 Iniciando sincronização...');
+            
+            // Simular processo de sincronização
+            const dados = {
+                paciente: pacienteAtual,
+                documentos: [],
+                timestamp: new Date().toISOString()
+            };
+            
+            setTimeout(() => {
+                console.log('✅ Sincronização concluída');
+                SecureNotification.show('✅ Dados sincronizados com sucesso!');
+            }, 1500);
+        }
+
+        function filtrarPorData() {
+            const data = document.getElementById('dataFiltro').value;
+            if (data) {
+                console.log('📅 Filtrando documentos por data:', data);
+                SecureNotification.show(`📅 Filtro aplicado para ${new Date(data).toLocaleDateString('pt-BR')}`);
+            }
+        }
+
+        // Funções específicas dos documentos
+        function abrirFichaAtendimento() {
+            // Abrir a Ficha de Atendimento em nova aba
+            window.open('ficha-atendimento.html', '_blank');
+            
+            // Log de auditoria
+            AuditSystem.log('FICHA_ATENDIMENTO_ACCESSED_FROM_CADERNO', {
+                paciente: pacienteAtual ? pacienteAtual.nome : 'Não selecionado'
+            });
+        }
+
+        function abrirEvolucao() {
+            SecureNotification.show('📊 Quadro Evolutivo em desenvolvimento!\n\nRecursos planejados:\n• Cards de evolução\n• Timeline de tratamento\n• Marcos importantes\n• Notificações automáticas');
+        }
+
+        function gerarReceita() {
+            document.getElementById('modal-receita').style.display = 'flex';
+            if (pacienteAtual) {
+                document.getElementById('receita-paciente').value = pacienteAtual.nome;
+            }
+        }
+
+        function gerarExames() {
+            document.getElementById('modal-exames').style.display = 'flex';
+            if (pacienteAtual) {
+                document.getElementById('exames-paciente').value = pacienteAtual.nome;
+            }
+        }
+
+        function fecharModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+
+        // Funções do orçamento
+        function gerarOrcamento() {
+            if (!validarOrcamento()) return;
+            
+            const dados = coletarDadosOrcamento();
+            const orcamentoCalculado = calcularOrcamento(dados);
+            
+            
+            
+            // Simular geração de PDF
+            setTimeout(() => {
+                SecureNotification.show('✅ Orçamento gerado com sucesso!\n\n' +
+                      `Paciente: ${orcamentoCalculado.nome}\n` +
+                      `Valor Final: R$ ${orcamentoCalculado.valorFinal.toFixed(2).replace('.', ',')}`);
+            }, 1000);
+        }
+
+        function enviarParaGestao() {
+            if (!validarOrcamento()) return;
+            
+            const dados = coletarDadosOrcamento();
+            dados.id = 'ORC-' + Date.now();
+            dados.status = 'pendente';
+            dados.dataGeracao = new Date().toISOString();
+            
+            // Salvar no localStorage para integração com gestão
+            const orcamentos = JSON.parse(localStorage.getItem('orcamentosGestao') || '[]');
+            orcamentos.push(dados);
+            localStorage.setItem('orcamentosGestao', JSON.stringify(orcamentos));
+            
+            SecureNotification.show('✅ Orçamento enviado para a Gestão!');
+            
+        }
+
+        function salvarRascunho() {
+            const dados = coletarDadosOrcamento();
+            dados.id = 'RASCUNHO-' + Date.now();
+            dados.dataSalvo = new Date().toISOString();
+            
+            const rascunhos = JSON.parse(localStorage.getItem('rascunhosOrcamento') || '[]');
+            rascunhos.push(dados);
+            localStorage.setItem('rascunhosOrcamento', JSON.stringify(rascunhos));
+            
+            SecureNotification.show('💾 Rascunho salvo com sucesso!');
+        }
+
+        function coletarDadosOrcamento() {
+            return {
+                nome: document.getElementById('orcamento-nome').value,
+                cirurgia: document.getElementById('orcamento-cirurgia').value,
+                valorClinica: parseFloat(document.getElementById('orcamento-valor-clinica').value) || 0,
+                valorHospital: parseFloat(document.getElementById('orcamento-valor-hospital').value) || 0,
+                formaPagamento: document.querySelector('input[name="pagamento"]:checked')?.value || '',
+                hospital: document.getElementById('orcamento-hospital').value,
+                observacoes: document.getElementById('orcamento-obs').value,
+                pacienteCpf: pacienteAtual ? pacienteAtual.cpf : null
+            };
+        }
+
+        function validarOrcamento() {
+            const dados = coletarDadosOrcamento();
+            
+            if (!dados.nome.trim()) {
+                SecureNotification.show('⚠️ Por favor, informe o nome do paciente.');
+                return false;
+            }
+            
+            if (!dados.cirurgia.trim()) {
+                SecureNotification.show('⚠️ Por favor, informe o tipo de cirurgia.');
+                return false;
+            }
+            
+            if (dados.valorClinica <= 0) {
+                SecureNotification.show('⚠️ Por favor, informe o valor da clínica.');
+                return false;
+            }
+            
+            return true;
+        }
+
+        function calcularOrcamento(dados) {
+            let valorTotal = dados.valorClinica + dados.valorHospital;
+            let valorFinal = valorTotal;
+            
+            switch (dados.formaPagamento) {
+                case 'vista':
+                    valorFinal = valorTotal * 0.97; // 3% desconto
+                    break;
+                case '3x':
+                    valorFinal = valorTotal * 1.05; // 5% acréscimo
+                    break;
+                case '10x':
+                    valorFinal = valorTotal * 1.10; // 10% acréscimo
+                    break;
+            }
+            
+            return {
+                ...dados,
+                valorTotal: valorTotal,
+                valorFinal: valorFinal
+            };
+        }
+
+        // Funções dos modais
+        function inserirTextoReceita(tipo) {
+            const textarea = document.getElementById('receita-prescricao');
+            const textos = {
+                antibiotico: `1. Amoxicilina 500mg - Tomar 1 cápsula de 8/8h por 7 dias
+2. Paracetamol 750mg - Tomar 1 comprimido de 6/6h se dor
+3. Dipirona 500mg - Tomar 1 comprimido de 6/6h se febre`,
+                analgesico: `1. Ibuprofeno 400mg - Tomar 1 comprimido de 8/8h
+2. Paracetamol 750mg - Tomar 1 comprimido de 6/6h se dor
+3. Aplicar gelo local por 15 minutos, 3x ao dia`,
+                'pos-operatorio': `Medicação Pós-Operatória:
+1. Cefalexina 500mg - 1 cápsula de 8/8h por 7 dias
+2. Nimesulida 100mg - 1 comprimido de 12/12h por 5 dias
+3. Plasil 10mg - 1 comprimido se náusea
+4. Manter curativo seco e limpo`
+            };
+            
+            textarea.value = textos[tipo] || '';
+        }
+
+        function inserirTextoExames(tipo) {
+            const textarea = document.getElementById('exames-lista');
+            const textos = {
+                'pre-operatorio': `Exames Pré-Operatórios:
+• Hemograma completo
+• Coagulograma (TP/TTPA)
+• Glicemia de jejum
+• Ureia e Creatinina
+• ECG
+• RX de Tórax`,
+                rotina: `Exames de Rotina:
+• Hemograma completo
+• Glicemia de jejum
+• Colesterol total e frações
+• Triglicerídeos
+• TSH e T4 livre
+• Urina tipo I`,
+                cardiologicos: `Avaliação Cardiológica:
+• ECG de repouso
+• Ecocardiograma
+• Teste ergométrico
+• Consulta cardiológica`
+            };
+            
+            textarea.value = textos[tipo] || '';
+        }
+
+        function gerarPDFReceita() {
+            const paciente = document.getElementById('receita-paciente').value;
+            const prescricao = document.getElementById('receita-prescricao').value;
+            
+            if (!paciente || !prescricao) {
+                SecureNotification.show('⚠️ Preencha todos os campos obrigatórios.');
+                return;
+            }
+            
+            console.log('📄 Gerando PDF da receita...');
+            SecureNotification.show('✅ PDF da receita gerado com sucesso!');
+            fecharModal('modal-receita');
+        }
+
+        function gerarPDFExames() {
+            const paciente = document.getElementById('exames-paciente').value;
+            const exames = document.getElementById('exames-lista').value;
+            
+            if (!paciente || !exames) {
+                SecureNotification.show('⚠️ Preencha todos os campos obrigatórios.');
+                return;
+            }
+            
+            console.log('📄 Gerando PDF dos exames...');
+            SecureNotification.show('✅ PDF do pedido de exames gerado com sucesso!');
+            fecharModal('modal-exames');
+        }
+    </script>
+    <script src="../assets/js/caderno-digital.js"></script>
+</body>
+</html>

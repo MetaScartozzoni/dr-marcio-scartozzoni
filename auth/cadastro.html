@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastro - Portal Dr. Marcio Scartozzoni</title>
+    <link rel="stylesheet" href="../assets/css/main.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Variáveis de ambiente -->
+    <script src="../assets/js/env.js"></script>
+    <!-- Supabase API Cliente -->
+    <script src="../assets/js/supabase-api.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .signup-container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+            padding: 40px;
+            width: 100%;
+            max-width: 500px;
+            text-align: center;
+        }
+
+        .signup-header {
+            margin-bottom: 30px;
+        }
+
+        .signup-header i {
+            font-size: 4em;
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+
+        .signup-header h1 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+            font-size: 2em;
+        }
+
+        .signup-header p {
+            color: #6c757d;
+            margin-bottom: 0;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+            text-align: left;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #2c3e50;
+        }
+
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+            outline: none;
+        }
+
+        .form-group input:focus, .form-group select:focus {
+            border-color: #667eea;
+        }
+
+        .error-message {
+            background-color: #fee;
+            color: #e74c3c;
+            padding: 12px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .success-message {
+            background-color: #e8f5e9;
+            color: #2ecc71;
+            padding: 12px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .btn-signup {
+            background: linear-gradient(to right, #667eea, #764ba2);
+            border: none;
+            padding: 12px 20px;
+            color: white;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            width: 100%;
+            transition: transform 0.3s, box-shadow 0.3s;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.2);
+            margin-top: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn-signup:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-signup:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 15px;
+        }
+
+        .form-row .form-group {
+            flex: 1;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .loading i {
+            font-size: 2em;
+            color: #667eea;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .form-footer {
+            margin-top: 20px;
+            text-align: center;
+            font-size: 14px;
+        }
+
+        .form-footer a {
+            color: #667eea;
+            text-decoration: none;
+        }
+
+        .form-footer a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 480px) {
+            .signup-container {
+                padding: 30px 20px;
+            }
+
+            .form-row {
+                flex-direction: column;
+                gap: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="signup-container">
+        <div class="signup-header">
+            <i class="fas fa-user-plus"></i>
+            <h1>Cadastro</h1>
+            <p>Crie sua conta no Portal Dr. Marcio Scartozzoni</p>
+        </div>
+
+        <div class="error-message" id="errorMessage"></div>
+        <div class="success-message" id="successMessage"></div>
+        <div class="loading" id="loading">
+            <i class="fas fa-spinner"></i>
+            <p>Processando...</p>
+        </div>
+
+        <form class="signup-form" id="signupForm">
+            <div class="form-group">
+                <label for="nome">Nome Completo</label>
+                <input type="text" id="nome" name="nome" required 
+                       placeholder="Digite seu nome completo">
+            </div>
+
+            <div class="form-group">
+                <label for="email">E-mail</label>
+                <input type="email" id="email" name="email" required 
+                       placeholder="Digite seu e-mail">
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="password">Senha</label>
+                    <input type="password" id="password" name="password" required 
+                          placeholder="Digite sua senha">
+                </div>
+
+                <div class="form-group">
+                    <label for="confirmPassword">Confirmar Senha</label>
+                    <input type="password" id="confirmPassword" name="confirmPassword" required 
+                          placeholder="Confirme sua senha">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="tipo">Tipo de Conta</label>
+                <select id="tipo" name="tipo" required>
+                    <option value="paciente">Paciente</option>
+                    <option value="medico">Médico</option>
+                    <option value="atendente">Atendente</option>
+                </select>
+            </div>
+
+            <button type="submit" class="btn-signup">
+                <i class="fas fa-user-plus"></i>
+                Criar Conta
+            </button>
+
+            <div class="form-footer">
+                <p>Já tem uma conta? <a href="login.html">Faça login</a></p>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const signupForm = document.getElementById('signupForm');
+            
+            signupForm.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                hideMessages();
+                
+                // Obter dados do formulário
+                const nome = document.getElementById('nome').value.trim();
+                const email = document.getElementById('email').value.trim();
+                const password = document.getElementById('password').value;
+                const confirmPassword = document.getElementById('confirmPassword').value;
+                const tipo = document.getElementById('tipo').value;
+                
+                // Validar dados
+                if (!nome || !email || !password || !tipo) {
+                    showError('Por favor, preencha todos os campos obrigatórios');
+                    return;
+                }
+                
+                if (password.length < 8) {
+                    showError('Sua senha deve ter pelo menos 8 caracteres');
+                    return;
+                }
+                
+                if (password !== confirmPassword) {
+                    showError('As senhas não correspondem');
+                    return;
+                }
+                
+                // Mostrar loading
+                showLoading(true);
+                
+                try {
+                    // Dados adicionais do usuário
+                    const userData = {
+                        nome: nome,
+                        tipo: tipo,
+                        data_criacao: new Date().toISOString()
+                    };
+                    
+                    // Criar conta no Supabase
+                    const result = await window.SupabaseAPI.signUp(email, password, userData);
+                    
+                    showLoading(false);
+                    
+                    if (result.success) {
+                        showSuccess('Cadastro realizado com sucesso! Verifique seu e-mail para confirmar sua conta.');
+                        
+                        // Limpar formulário
+                        signupForm.reset();
+                        
+                        // Redirecionar após alguns segundos
+                        setTimeout(() => {
+                            window.location.href = 'login.html';
+                        }, 5000);
+                    } else {
+                        showError(result.error || 'Erro ao criar conta. Tente novamente.');
+                    }
+                } catch (error) {
+                    console.error('Erro no cadastro:', error);
+                    showLoading(false);
+                    showError('Ocorreu um erro durante o cadastro. Tente novamente mais tarde.');
+                }
+            });
+        });
+        
+        // Utilitários de UI
+        function showError(message) {
+            const errorDiv = document.getElementById('errorMessage');
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+        }
+
+        function showSuccess(message) {
+            const successDiv = document.getElementById('successMessage');
+            successDiv.textContent = message;
+            successDiv.style.display = 'block';
+        }
+
+        function hideMessages() {
+            document.getElementById('errorMessage').style.display = 'none';
+            document.getElementById('successMessage').style.display = 'none';
+        }
+
+        function showLoading(show) {
+            const loading = document.getElementById('loading');
+            const form = document.getElementById('signupForm');
+            const button = form.querySelector('button[type="submit"]');
+
+            if (show) {
+                loading.style.display = 'block';
+                form.style.opacity = '0.5';
+                button.disabled = true;
+            } else {
+                loading.style.display = 'none';
+                form.style.opacity = '1';
+                button.disabled = false;
+            }
+        }
+    </script>
+</body>
+</html>
