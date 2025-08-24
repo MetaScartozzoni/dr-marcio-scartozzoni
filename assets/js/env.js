@@ -3,9 +3,9 @@
 
 // NÃO COMMITAR credenciais reais. Copie este arquivo para env.local.js (gitignored) e preencha.
 window.ENV = window.ENV || {
-    SUPABASE_URL: undefined, // definir em env.local.js ou variáveis de ambiente Vercel
-    SUPABASE_ANON_KEY: undefined,
-    API_URL: "/api",
+    SUPABASE_URL: window.__PUBLIC_ENV__?.SUPABASE_URL || undefined,
+    SUPABASE_ANON_KEY: window.__PUBLIC_ENV__?.SUPABASE_ANON_KEY || undefined,
+    API_URL: window.__PUBLIC_ENV__?.API_URL || "/api",
     DEBUG: false,
     VERSION: "1.0.0"
 };
