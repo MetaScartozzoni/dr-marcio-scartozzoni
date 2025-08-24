@@ -7,6 +7,18 @@ class SupabaseAPI {
         this.supabaseUrl = window.ENV?.SUPABASE_URL || window.PORTAL_CONFIG?.SUPABASE_URL;
         this.supabaseAnonKey = window.ENV?.SUPABASE_ANON_KEY || window.PORTAL_CONFIG?.SUPABASE_ANON_KEY;
 
+        // Modo de desenvolvimento/demonstração
+        this.isDevelopmentMode = window.ENV?.DEBUG || 
+                                (this.supabaseUrl === "https://demo.supabase.co") ||
+                                (!this.supabaseUrl || !this.supabaseAnonKey);
+
+        if(this.isDevelopmentMode){
+            console.warn('🔧 Supabase em modo desenvolvimento/demonstração. Usando autenticação mock.');
+            this.initialized = true;
+            this.client = null;
+            return;
+        }
+
         if(!this.supabaseUrl || !this.supabaseAnonKey){
             console.error('Supabase: credenciais ausentes. Crie assets/js/env.js a partir de env.template.js com SUPABASE_URL e SUPABASE_ANON_KEY.');
             this.initialized = false;
@@ -318,6 +330,11 @@ class SupabaseAPI {
     // ========================================
     
     async signIn(email, password) {
+        // Modo de desenvolvimento - autenticação mock
+        if (this.isDevelopmentMode) {
+            return this.mockSignIn(email, password);
+        }
+        
         if (!this.initialized) await this.initializeSupabase();
         
         try {
@@ -379,6 +396,11 @@ class SupabaseAPI {
     }
     
     async signOut() {
+        // Modo de desenvolvimento - usar signOut mock
+        if (this.isDevelopmentMode) {
+            return this.mockSignOut();
+        }
+        
         if (!this.initialized) return true;
         
         try {
@@ -450,6 +472,11 @@ class SupabaseAPI {
     }
     
     async getSession() {
+        // Modo de desenvolvimento - verificar sessão mock
+        if (this.isDevelopmentMode) {
+            return this.mockGetSession();
+        }
+        
         if (!this.initialized) await this.initializeSupabase();
         
         try {
@@ -509,6 +536,95 @@ class SupabaseAPI {
             toast.style.opacity = '0';
             setTimeout(() => toast.remove(), 300);
         }, 4000);
+    }
+
+    // ========================================
+    // 🧪 MÉTODOS MOCK PARA DESENVOLVIMENTO
+    // ========================================
+    
+    mockSignIn(email, password) {
+        console.log('🧪 Mock SignIn:', email);
+        
+        // Usuários de teste para desenvolvimento
+        const mockUsers = {
+            'admin@demo.com': { tipo: 'admin', nome: 'Administrador Demo' },
+            'medico@demo.com': { tipo: 'medico', nome: 'Dr. Demo' },
+            'secretaria@demo.com': { tipo: 'secretaria', nome: 'Secretária Demo' },
+            'paciente@demo.com': { tipo: 'paciente', nome: 'Paciente Demo' }
+        };
+        
+        const user = mockUsers[email.toLowerCase()];
+        
+        if (!user || password !== 'demo123') {
+            this.showErrorToast('Credenciais inválidas. Use admin@demo.com / demo123');
+            return {
+                success: false,
+                error: 'Credenciais inválidas'
+            };
+        }
+        
+        // Simular dados de sessão
+        const mockSession = {
+            access_token: 'mock-token-' + Date.now(),
+            expires_at: Date.now() + (24 * 60 * 60 * 1000), // 24 horas
+            user: {
+                id: 'mock-user-' + user.tipo,
+                email: email,
+                user_metadata: user
+            }
+        };
+        
+        // Salvar sessão mock
+        this.saveUserSession({
+            session: mockSession,
+            user: mockSession.user
+        });
+        
+        this.showSuccessToast('Login demo realizado com sucesso!');
+        
+        return {
+            success: true,
+            user: mockSession.user,
+            session: mockSession
+        };
+    }
+    
+    mockGetSession() {
+        const userData = localStorage.getItem('clinica_user_data');
+        const token = localStorage.getItem('clinica_auth_token');
+        
+        if (!userData || !token) return null;
+        
+        try {
+            const user = JSON.parse(userData);
+            const now = Date.now();
+            
+            // Verificar se a sessão expirou (24 horas)
+            if (user.timestamp && (now - user.timestamp) > (24 * 60 * 60 * 1000)) {
+                this.mockSignOut();
+                return null;
+            }
+            
+            return {
+                access_token: token,
+                expires_at: user.timestamp + (24 * 60 * 60 * 1000),
+                user: {
+                    id: user.id,
+                    email: user.email,
+                    user_metadata: user
+                }
+            };
+        } catch (e) {
+            return null;
+        }
+    }
+    
+    mockSignOut() {
+        localStorage.removeItem('clinica_auth_token');
+        localStorage.removeItem('clinica_user_data');
+        sessionStorage.removeItem('clinica_auth_token');
+        sessionStorage.removeItem('clinica_user_data');
+        return true;
     }
 }
 
