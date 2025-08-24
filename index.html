@@ -54,7 +54,7 @@
         <nav>
             <ul>
                 <li><a href="index.html">🏠 Início</a></li>
-                <li><a href="login.html">🔐 Login</a></li>
+                <li><a href="auth/login.html">🔐 Login</a></li>
                 <li><a href="portal-deploy-final-correto/dashboard.html">📊 Dashboard</a></li>
                 <li><a href="modules/agendamentos.html">📅 Agendamentos</a></li>
                 <li><a href="modules/pacientes.html">👥 Pacientes</a></li>
@@ -180,8 +180,23 @@
             }, 1500);
         });
 
-        // Efeitos interativos nos cards
-        document.addEventListener('DOMContentLoaded', function() {
+        // Verificar autenticação e redirecionar se logado
+        document.addEventListener('DOMContentLoaded', async function() {
+            try {
+                const session = await window.SupabaseAPI.getSession();
+                if (session) {
+                    // Usuário já está logado, redirecionar para o dashboard apropriado
+                    const userData = JSON.parse(localStorage.getItem('clinica_user_data') || sessionStorage.getItem('clinica_user_data') || '{}');
+                    const target = window.RoleRouter?.resolve(userData) || 'home.html';
+                    console.log('🔄 Usuário logado, redirecionando para:', target);
+                    window.location.href = target;
+                    return;
+                }
+            } catch (e) {
+                console.log('❌ Erro ao verificar sessão:', e);
+            }
+            
+            // Se chegou aqui, usuário não está logado - mostrar página inicial
             console.log('🏥 Portal Dr. Marcio - Sistema Carregado!');
             
             const cards = document.querySelectorAll('.feature-card');
