@@ -1,7 +1,7 @@
 {
   "version": 2,
   "name": "portal-dr-marcio",
-  "buildCommand": "",
+  "buildCommand": "npm run inject-env",
   "outputDirectory": ".",
   "installCommand": "",
   "framework": null,
