@@ -19,16 +19,16 @@ window.PORTAL_CONFIG = {
     API: {
         BASE_URL: window.location.hostname === 'localhost' 
             ? 'http://localhost:8000/api'
-            : 'https://portal.marcioplasticsurgery.com/api',
+            : 'https://SEU_DOMINIO_PRODUCAO/api', // Ajuste no deploy
         TIMEOUT: 30000,
         RETRY_ATTEMPTS: 3
     },
 
     // Configurações do domínio
     DOMAIN: {
-        PRODUCTION: 'portal.marcioplasticsurgery.com',
+        PRODUCTION: 'SEU_DOMINIO_PRODUCAO',
         DEVELOPMENT: 'localhost:8000',
-        STAGING: 'staging-portal.marcioplasticsurgery.com'
+        STAGING: 'SEU_DOMINIO_STAGING'
     },
 
     // Configurações do sistema
@@ -102,10 +102,10 @@ window.PORTAL_CONFIG = {
 
     // URLs importantes
     URLS: {
-        HELP: 'https://portal.marcioplasticsurgery.com/help',
-        SUPPORT: 'mailto:contato@drmarcioscartozzoni.com.br',
-        PRIVACY: 'https://portal.marcioplasticsurgery.com/privacy',
-        TERMS: 'https://portal.marcioplasticsurgery.com/terms'
+    HELP: '#',
+    SUPPORT: 'mailto:contato@seudominio.com',
+    PRIVACY: '#',
+    TERMS: '#'
     }
 };
 
