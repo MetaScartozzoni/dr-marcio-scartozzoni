@@ -8,7 +8,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
     <script src="../assets/js/env.js"></script>
     <script src="../assets/js/portal-config.js"></script>
-    <script src="../assets/js/supabase-api.js"></script>
+  <script src="../assets/js/supabase-api.js"></script>
+  <script src="../assets/js/role-router.js"></script>
     <script src="../assets/js/api.js"></script>
     <style>
       body {font-family:'Segoe UI',Tahoma,Verdana,sans-serif;background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);min-height:100vh;display:flex;align-items:center;justify-content:center;margin:0;padding:20px;}
@@ -86,7 +87,15 @@
     const setLoading = s=>{ loading.style.display = s?'block':'none'; btn.disabled=s; form.style.opacity=s?'.55':'1'; };
 
     async function checkSession(){
-      try { const session = await window.SupabaseAPI.getSession(); if(session){ window.location.href='../home.html'; return; } } catch(e){}
+      try {
+        const session = await window.SupabaseAPI.getSession();
+        if(session){
+          const userData = JSON.parse(localStorage.getItem('clinica_user_data') || sessionStorage.getItem('clinica_user_data') || '{}');
+          const target = window.RoleRouter?.resolve(userData) || '../home.html';
+          window.location.href = target;
+          return;
+        }
+      } catch(e){}
     }
 
     form.addEventListener('submit', async e=>{
@@ -97,8 +106,10 @@
       try {
         const result = await window.SupabaseAPI.signIn(email, password);
         if(!result.success){ msgError(result.error || 'Credenciais inválidas'); setLoading(false); return; }
-        msgOk('Login realizado. Redirecionando...');
-        setTimeout(()=> window.location.href='../home.html', 500);
+  msgOk('Login realizado. Redirecionando...');
+  const userData = JSON.parse(localStorage.getItem('clinica_user_data') || sessionStorage.getItem('clinica_user_data') || '{}');
+  const target = window.RoleRouter?.resolve(userData) || '../home.html';
+  setTimeout(()=> window.location.href = target, 500);
       } catch(err){ console.error(err); msgError('Erro ao autenticar'); }
       finally { setLoading(false); }
     });
