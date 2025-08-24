@@ -3,14 +3,20 @@
 
 class SupabaseAPI {
     constructor() {
-        // ⚠️ CONFIGURAR COM SUAS CREDENCIAIS REAIS DO SUPABASE
-        this.supabaseUrl = window.ENV?.SUPABASE_URL || 'https://obohdaxvawmjhxsjgikp.supabase.co';
-        this.supabaseAnonKey = window.ENV?.SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9ib2hkYXh2YXdtamh4c2pnaWtwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQ1NDQzMTYsImV4cCI6MjA3MDEyMDMxNn0.Oa4GC17FfUqajBRuEDLroXIg1vBd_x6shE6ke8pKMKU';
-        
+        // 🔐 As credenciais devem vir de window.ENV (arquivo não versionado) ou PORTAL_CONFIG/config.js
+        this.supabaseUrl = window.ENV?.SUPABASE_URL || window.PORTAL_CONFIG?.SUPABASE_URL;
+        this.supabaseAnonKey = window.ENV?.SUPABASE_ANON_KEY || window.PORTAL_CONFIG?.SUPABASE_ANON_KEY;
+
+        if(!this.supabaseUrl || !this.supabaseAnonKey){
+            console.error('Supabase: credenciais ausentes. Crie assets/js/env.js a partir de env.template.js com SUPABASE_URL e SUPABASE_ANON_KEY.');
+            this.initialized = false;
+            return;
+        }
+
         // Cliente Supabase (será inicializado quando necessário)
         this.client = null;
         this.initialized = false;
-        
+
         this.initializeSupabase();
     }
 

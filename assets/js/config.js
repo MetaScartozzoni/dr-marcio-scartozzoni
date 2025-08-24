@@ -12,8 +12,8 @@ window.PORTAL_CONFIG = {
     // 3. Vá em Settings > API
     // 4. Copie a URL e as chaves
     
-    SUPABASE_URL: 'https://SEU_PROJETO_ID.supabase.co',
-    SUPABASE_ANON_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...', // Chave pública (anon/public)
+    SUPABASE_URL: undefined, // Definido via env.js (local) ou variáveis de ambiente (produção)
+    SUPABASE_ANON_KEY: undefined, // Nunca commit a chave real aqui
     
     // Configurações da API
     API: {

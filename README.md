@@ -51,12 +51,26 @@ Sistema completo de gestão médica com autenticação Supabase e deploy na Verc
 
 O sistema utiliza variáveis de ambiente para conexão com o Supabase:
 
+Crie um arquivo não versionado `assets/js/env.local.js` copiando o template:
+
 ```javascript
+// assets/js/env.local.js (NÃO COMMITAR)
 window.ENV = {
-    SUPABASE_URL: "https://obohdaxvawmjhxsjgikp.supabase.co",
-    SUPABASE_ANON_KEY: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9ib2hkYXh2YXdtamh4c2pnaWtwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQ1NDQzMTYsImV4cCI6MjA3MDEyMDMxNn0.Oa4GC17FfUqajBRuEDLroXIg1vBd_x6shE6ke8pKMKU"
+    SUPABASE_URL: "https://SEU_PROJETO_ID.supabase.co",
+    SUPABASE_ANON_KEY: "SUA_CHAVE_PUBLICA_ANON",
+    API_URL: "/api",
+    DEBUG: true
 };
 ```
+
+Inclua-o depois de `env.js` nas páginas locais. Em produção configure as variáveis no painel Vercel (Project Settings > Environment Variables) com os nomes:
+
+```
+SUPABASE_URL
+SUPABASE_ANON_KEY
+```
+
+As chaves foram removidas do repositório para segurança.
 
 ## Deploy na Vercel
 
